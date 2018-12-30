@@ -12,10 +12,14 @@ import Footer from "./Footer/Footer";
 class Layout extends Component {
   state = {
     navItems: [],
-    gamesId: [],
-    currentStreams: []
+    gamesIds: [],
+    currentStreams: [],
+    error: false
   };
 
+  onNavChange = currentTab => {
+    this.setState({ currentTab });
+  }
   getGames = () => {
     return axios.get("https://api.twitch.tv/helix/games/top?first=5", {
       headers: {
@@ -34,6 +38,7 @@ class Layout extends Component {
       }
     );
   };
+
   getUsers = userIds => {
     let url = `https://api.twitch.tv/helix/users?id=${userIds[0]}`;
     for (let i = 1; i < userIds.length; i++) {
@@ -47,9 +52,6 @@ class Layout extends Component {
     });
   };
 
-  console = () => {
-    console.log();
-  };
 
   componentDidMount() {
     let navItems = [];
@@ -63,6 +65,10 @@ class Layout extends Component {
           navItems.push(gameResponse.data.data[i].name);
           gamesIds.push(gameResponse.data.data[i].id);
         }
+        this.setState({
+          navItems,
+          gamesIds
+        })
         return this.getCurrentStreams(gamesIds[0]);
       })
       .then(StreamsResponse => {
@@ -74,46 +80,67 @@ class Layout extends Component {
       })
       .then(usersResponse => {
         const users = usersResponse.data.data;
-        for(let i = 0; i < users.length; i++){
-          currentStreams[i].userInfo = users[i]; 
-          currentStreams[i].url = `https://www.twitch.tv/${users[i].login}`  
-        }
-        this.setState({ currentStreams });
-      });
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const { currentTab } = this.state; 
-    const gameIds = [...this.state.gameIds];
-    let currentStreams = [];
-    let userIds = [];
-
-    if (prevState.currentTab !== currentTab) {
-      this.setState({ currentStreams });
-      this.getCurrentStreams(gameIds[currentTab])
-      .then(streamResponse => {
-        currentStreams = streamResponse.data.data;
-        for (let i = 0; i < currentStreams.length; i++) {
-          userIds.push(currentStreams[i].user_id);
-        }
-        return this.getUsers(userIds);
-      })
-      .then(userResponse => {
-        const users = userResponse.data.data;
         for (let i = 0; i < users.length; i++) {
           currentStreams[i].userInfo = users[i];
           currentStreams[i].url = `https://www.twitch.tv/${users[i].login}`
         }
         this.setState({ currentStreams });
+      }).catch(error => {
+        // console.log(error)
+        this.setState({
+          error: true
+        })
       })
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { currentTab } = this.state;
+    const gamesIds = [...this.state.gamesIds]
+    let currentStreams = [];
+    let userIds = [];
+    if (prevState.currentTab !== currentTab) {
+      console.log(gamesIds);
+      this.setState({ currentStreams });
+      this.getCurrentStreams(gamesIds[currentTab])
+        .then(StreamsResponse => {
+          currentStreams = StreamsResponse.data.data;
+          for (let i = 0; i < currentStreams.length; i++) {
+            userIds.push(currentStreams[i].user_id);
+          }
+          return this.getUsers(userIds);
+        })
+        .then(usersResponse => {
+          const users = usersResponse.data.data;
+          for (let i = 0; i < users.length; i++) {
+            currentStreams[i].userInfo = users[i];
+            currentStreams[i].url = `https://www.twitch.tv/${users[i].login}`
+          }
+          this.setState({ currentStreams });
+        }).catch(error => {
+          // console.log(error)
+          this.setState({ error: true })
+        })
     }
   }
-  
+
   render() {
+    const { navItems, currentTab, currentStreams, error } = this.state;
+
     return (
       <div>
-        <Navbar navItems={this.state.navItems} gamesId={this.state.gamesId} />
-        <GamePage />>
+
+        <Navbar
+          navItems={navItems}
+          currentTab={currentTab}
+          onChange={this.onNavChange}
+
+        />
+        <GamePage
+          navItems={navItems}
+          currentTab={currentTab}
+          currentStreams={currentStreams}
+          error={error}
+        />
         <Footer />>
       </div>
     );
