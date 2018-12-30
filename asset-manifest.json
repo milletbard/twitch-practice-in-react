@@ -1,7 +1,7 @@
 {
   "main.css": "/twitch-practice-in-react/static/css/main.433779a7.chunk.css",
-  "main.js": "/twitch-practice-in-react/static/js/main.af8b19ce.chunk.js",
-  "main.js.map": "/twitch-practice-in-react/static/js/main.af8b19ce.chunk.js.map",
+  "main.js": "/twitch-practice-in-react/static/js/main.478c519f.chunk.js",
+  "main.js.map": "/twitch-practice-in-react/static/js/main.478c519f.chunk.js.map",
   "static/css/1.9f984286.chunk.css": "/twitch-practice-in-react/static/css/1.9f984286.chunk.css",
   "static/js/1.fde70c7a.chunk.js": "/twitch-practice-in-react/static/js/1.fde70c7a.chunk.js",
   "static/js/1.fde70c7a.chunk.js.map": "/twitch-practice-in-react/static/js/1.fde70c7a.chunk.js.map",
@@ -10,6 +10,6 @@
   "static/css/1.9f984286.chunk.css.map": "/twitch-practice-in-react/static/css/1.9f984286.chunk.css.map",
   "static/css/main.433779a7.chunk.css.map": "/twitch-practice-in-react/static/css/main.433779a7.chunk.css.map",
   "index.html": "/twitch-practice-in-react/index.html",
-  "precache-manifest.6ef6c5c096e30c715332510683100541.js": "/twitch-practice-in-react/precache-manifest.6ef6c5c096e30c715332510683100541.js",
+  "precache-manifest.f2187e448555ce4954711349901c952e.js": "/twitch-practice-in-react/precache-manifest.f2187e448555ce4954711349901c952e.js",
   "service-worker.js": "/twitch-practice-in-react/service-worker.js"
 }
