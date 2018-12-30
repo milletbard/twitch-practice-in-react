@@ -23,7 +23,7 @@ class Layout extends Component {
   getGames = () => {
     return axios.get("https://api.twitch.tv/helix/games/top?first=5", {
       headers: {
-        "Client-ID": "jdsl3lgf1c8gcxi44u29sm30m015n3"
+        "Client-ID": "zm42w1xj3zt740cfxo455igot5efz3"
       }
     });
   };
@@ -33,7 +33,7 @@ class Layout extends Component {
       `https://api.twitch.tv/helix/streams?game_id=${gameID}&first=24`,
       {
         headers: {
-          "Client-ID": "jdsl3lgf1c8gcxi44u29sm30m015n3"
+          "Client-ID": "zm42w1xj3zt740cfxo455igot5efz3"
         }
       }
     );
@@ -47,7 +47,7 @@ class Layout extends Component {
 
     return axios.get(url, {
       headers: {
-        "Client-ID": "jdsl3lgf1c8gcxi44u29sm30m015n3"
+        "Client-ID": "zm42w1xj3zt740cfxo455igot5efz3"
       }
     });
   };
