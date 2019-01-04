@@ -1,10 +1,8 @@
 import React, { Component } from "react";
-
-import axios from "axios";
 import Navbar from "./Navbar/Navbar";
 import GamePage from "./GamePage/GamePage";
 import Footer from "./Footer/Footer";
-
+import { getGames, getCurrentStreams, getUsers } from './Api'
 // import TravelCards from "./Travel/TravelCards";
 /**
  * The main App component
@@ -13,6 +11,7 @@ class Layout extends Component {
   state = {
     navItems: [],
     gamesIds: [],
+    currentTab: 0,
     currentStreams: [],
     error: false
   };
@@ -20,63 +19,18 @@ class Layout extends Component {
   onNavChange = currentTab => {
     this.setState({ currentTab });
   }
-  getGames = () => {
-    return axios.get("https://api.twitch.tv/helix/games/top?first=5", {
-      headers: {
-        "Client-ID": "zm42w1xj3zt740cfxo455igot5efz3"
-      }
-    });
-  };
 
-  getCurrentStreams = gameID => {
-    return axios.get(
-      `https://api.twitch.tv/helix/streams?game_id=${gameID}&first=24`,
-      {
-        headers: {
-          "Client-ID": "zm42w1xj3zt740cfxo455igot5efz3"
-        }
-      }
-    );
-  };
-
-  getUsers = userIds => {
-    let url = `https://api.twitch.tv/helix/users?id=${userIds[0]}`;
-    for (let i = 1; i < userIds.length; i++) {
-      url += `&id=${userIds[i]}`;
-    }
-
-    return axios.get(url, {
-      headers: {
-        "Client-ID": "zm42w1xj3zt740cfxo455igot5efz3"
-      }
-    });
-  };
-
-
-  componentDidMount() {
-    let navItems = [];
-    let gamesIds = [];
+  updateStream = () => {
+    const { gamesIds, currentTab } = this.state;
     let currentStreams = [];
     let userIds = [];
-    //===============================================================取得當前5個熱門的遊戲&id
-    this.getGames()
-      .then(gameResponse => {
-        for (let i = 0; i < 5; i++) {
-          navItems.push(gameResponse.data.data[i].name);
-          gamesIds.push(gameResponse.data.data[i].id);
-        }
-        this.setState({
-          navItems,
-          gamesIds
-        })
-        return this.getCurrentStreams(gamesIds[0]);
-      })
+    getCurrentStreams(gamesIds[currentTab])
       .then(StreamsResponse => {
         currentStreams = StreamsResponse.data.data;
         for (let i = 0; i < currentStreams.length; i++) {
           userIds.push(currentStreams[i].user_id);
         }
-        return this.getUsers(userIds);
+        return getUsers(userIds);
       })
       .then(usersResponse => {
         const users = usersResponse.data.data;
@@ -86,49 +40,81 @@ class Layout extends Component {
         }
         this.setState({ currentStreams });
       }).catch(error => {
-        // console.log(error)
+        this.setState({ error: true })
+      })
+  }
+
+  componentDidMount() {
+    let navItems = [];
+    let gamesIds = [];
+
+    //===============================================================取得當前5個熱門的遊戲&id
+    getGames()
+      .then(gameResponse => {
+        for (let i = 0; i < 5; i++) {
+          navItems.push(gameResponse.data.data[i].name);
+          gamesIds.push(gameResponse.data.data[i].id);
+        }
+        this.setState({
+          navItems,
+          gamesIds
+        })
+      }).then(() => {
+        this.updateStream();
+      }).catch(error => {
         this.setState({
           error: true
         })
       })
   }
 
+
+
+  //   getGames()
+  //     .then(gameResponse => {
+  //       for (let i = 0; i < 5; i++) {
+  //         navItems.push(gameResponse.data.data[i].name);
+  //         gamesIds.push(gameResponse.data.data[i].id);
+  //       }
+  //       this.setState({
+  //         navItems,
+  //         gamesIds
+  //       })
+  //       return getCurrentStreams(gamesIds[0]);
+  //     })
+  //     .then(StreamsResponse => {
+  //       currentStreams = StreamsResponse.data.data;
+  //       for (let i = 0; i < currentStreams.length; i++) {
+  //         userIds.push(currentStreams[i].user_id);
+  //       }
+  //       return getUsers(userIds);
+  //     })
+  //     .then(usersResponse => {
+  //       const users = usersResponse.data.data;
+  //       for (let i = 0; i < users.length; i++) {
+  //         currentStreams[i].userInfo = users[i];
+  //         currentStreams[i].url = `https://www.twitch.tv/${users[i].login}`
+  //       }
+  //       this.setState({ currentStreams });
+  //     }).catch(error => {
+  //       // console.log(error)
+  //       this.setState({
+  //         error: true
+  //       })
+  //     })
+  // }
+
   componentDidUpdate(prevProps, prevState) {
-    const { currentTab } = this.state;
-    const gamesIds = [...this.state.gamesIds]
-    let currentStreams = [];
-    let userIds = [];
-    if (prevState.currentTab !== currentTab) {
-      console.log(gamesIds);
-      this.setState({ currentStreams });
-      this.getCurrentStreams(gamesIds[currentTab])
-        .then(StreamsResponse => {
-          currentStreams = StreamsResponse.data.data;
-          for (let i = 0; i < currentStreams.length; i++) {
-            userIds.push(currentStreams[i].user_id);
-          }
-          return this.getUsers(userIds);
-        })
-        .then(usersResponse => {
-          const users = usersResponse.data.data;
-          for (let i = 0; i < users.length; i++) {
-            currentStreams[i].userInfo = users[i];
-            currentStreams[i].url = `https://www.twitch.tv/${users[i].login}`
-          }
-          this.setState({ currentStreams });
-        }).catch(error => {
-          // console.log(error)
-          this.setState({ error: true })
-        })
+    if (prevState.currentTab !== this.state.currentTab) {
+      this.setState({ currentStreams: [] });
+      this.updateStream();
     }
   }
-
   render() {
     const { navItems, currentTab, currentStreams, error } = this.state;
 
     return (
       <div>
-
         <Navbar
           navItems={navItems}
           currentTab={currentTab}
