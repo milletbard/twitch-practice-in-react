@@ -51,6 +51,7 @@ class Layout extends Component {
     //===============================================================取得當前5個熱門的遊戲&id
     getGames()
       .then(gameResponse => {
+ 
         for (let i = 0; i < 5; i++) {
           navItems.push(gameResponse.data.data[i].name);
           gamesIds.push(gameResponse.data.data[i].id);
@@ -106,7 +107,11 @@ class Layout extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.currentTab !== this.state.currentTab) {
-      this.setState({ currentStreams: [] });
+     
+      this.setState({ 
+        currentStreams: [],
+        currentTab: this.state.currentTab
+      });
       this.updateStream();
     }
   }

@@ -37,13 +37,13 @@ const Navbar = props => {
       </button>
       <div className="collapse navbar-collapse" id="navbarSupportedContent">
         <ul className="navbar-nav mr-auto">
-          {[0, 1, 2, 3, 4].map(gameOrder => {
+          {[0, 1, 2, 3, 4].map(gameOrder  => {
             return <NavItem
               navItems={navItems}
               currentTab={currentTab}
               onChange={onChange}
               gameOrder={gameOrder}
-              key={'key_' + gameOrder}
+              key={gameOrder}
             />
           })}
 

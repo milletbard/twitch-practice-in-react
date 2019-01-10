@@ -11,7 +11,7 @@ const instance = axios.create({
 
 export const getGames = () => instance.get('/games/top?first=5');
 
-export const getCurrentStreams = (gameID) => instance.get(`streams?game_id${gameID}&first=24`);
+export const getCurrentStreams = (gameID) => instance.get(`streams?game_id=${gameID}&first=24`);
 export const getUsers = (userIds) => {
     let url = `/users?id=${userIds[0]}`;
     for (let i = 1; i < userIds.length; i++) {
